@@ -60,7 +60,7 @@ static esp_err_t mpu6050_register_write_byte(uint8_t reg_addr, uint8_t data)
 /**
  * @brief i2c master initialization
  */
-static esp_err_t i2c_master_init(void)
+esp_err_t i2c_master_init(void)
 {
     int i2c_master_port = I2C_MASTER_NUM;
 
@@ -268,8 +268,8 @@ esp_err_t mpu6050_init(void)
     printf("[MPU6050]:who am I> %x is 0x68?\n",data);
 
     ESP_ERROR_CHECK(mpu6050_register_write_byte(MPU6050_RA_PWR_MGMT_1, 0x01));    
-	ESP_ERROR_CHECK(mpu6050_register_write_byte(MPU6050_RA_PWR_MGMT_2, 0x00));       
-	mpu6050_set_rate(50);    
+    ESP_ERROR_CHECK(mpu6050_register_write_byte(MPU6050_RA_PWR_MGMT_2, 0x00));       
+    mpu6050_set_rate(50);    
     return ESP_OK;
 }
 

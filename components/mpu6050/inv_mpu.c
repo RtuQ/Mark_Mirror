@@ -564,7 +564,7 @@ const struct test_s test={
 5,				//	packet_thresh
 10.0f,			 //	min_dps
 105.0f,			 //	max_dps
-0.14f,			//	max_gyro_var
+0.18f,			//	max_gyro_var
 0.3f,		   //	min_g
 0.95f,		   //	max_g
 0.14f		   //	max_accel_var
@@ -1967,6 +1967,7 @@ static int gyro_self_test(long *bias_regular, long *bias_st)
             while (--tmp[jj])
                 st_shift *= 1.046f;
             st_shift_var = st_shift_cust / st_shift - 1.f;
+            printf("show:%f\r\n",fabs(st_shift_var));
             if (fabs(st_shift_var) > test.max_gyro_var)
                 result |= 1 << jj;
         } else if ((st_shift_cust < test.min_dps) ||
@@ -2868,6 +2869,7 @@ uint8_t run_self_test(void)
 	//char test_packet[4] = {0};
 	long gyro[3], accel[3]; 
 	result = mpu_run_self_test(gyro, accel);
+    printf("run_self_test:%d\r\n",result);
 	if (result == 0x3) 
 	{
 		/* Test passed. We can trust the gyro data here, so let's push it down

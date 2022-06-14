@@ -11,10 +11,12 @@
 #include "esp_chip_info.h"
 #include "esp_spi_flash.h"
 #include "inv_mpu.h"
+#include "mpu6050.h"
 
 void app_main(void)
 {
     printf("Hello world!\n");
+    int ret = 0;
     float pitch,roll,yaw;
 
     /* Print chip information */
@@ -34,16 +36,19 @@ void app_main(void)
 
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
     
-    mpu_init();
-    mpu_dmp_init();
-    // for (int i = 10; i >= 0; i--) {
-    //     printf("Restarting in %d seconds...\n", i);
-    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    // }
+
+    ESP_ERROR_CHECK(i2c_master_init());
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    ret = mpu_dmp_init();
+    printf("mpu_dmp:%d\r\n",ret);
+
+
     while(1) {
-        mpu_dmp_get_data(&pitch,&roll,&yaw);
-        printf("read:%f,%f,%f",pitch,roll,yaw);
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        while (mpu_dmp_get_data(&pitch,&roll,&yaw)) {
+            printf("%f,%f,%f\r\n",pitch,roll,yaw);
+        }
+        
+        vTaskDelay(200 / portTICK_PERIOD_MS);
     }
     
 
