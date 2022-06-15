@@ -217,7 +217,7 @@ size_t lvgl_get_display_buffer_size(void)
     defined (CONFIG_LV_TFT_DISPLAY_CONTROLLER_RA8875)   ||  \
     defined (CONFIG_LV_TFT_DISPLAY_CONTROLLER_GC9A01)   ||  \
     defined (CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9163C)
-    disp_buffer_size = LV_HOR_RES_MAX * 40;
+    disp_buffer_size = 240 * 240;
 #elif defined CONFIG_LV_TFT_DISPLAY_CONTROLLER_SH1107
     disp_buffer_size = LV_HOR_RES_MAX * LV_VER_RES_MAX;
 #elif defined CONFIG_LV_TFT_DISPLAY_CONTROLLER_SSD1306
@@ -241,7 +241,7 @@ size_t lvgl_get_display_buffer_size(void)
 
 #else /* LVGL v8 */
     /* ToDo: Implement display buffer size calculation with configuration values from the display driver */
-    disp_buffer_size = 320*40; // Reasonable for start
+    disp_buffer_size = 240*240; // Reasonable for start
 #endif
 
     return disp_buffer_size;

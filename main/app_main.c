@@ -72,8 +72,7 @@ void app_main(void)
         while (mpu_dmp_get_data(&pitch,&roll,&yaw)) {
             printf("%f,%f,%f\r\n",pitch,roll,yaw);
         }
-        
-        vTaskDelay(200 / portTICK_PERIOD_MS);
+        vTaskDelay(200/portTICK_PERIOD_MS);
     }
     
 
@@ -127,6 +126,7 @@ static void guiTask(void *pvParameter)
 
     /* LVGL v8 lv_label_create no longer takes 2 parameters */
     lv_obj_t *label1 =  lv_label_create(scr);
+    // lv_obj_set_style_bg_color(label1,lv_color_hex(0xFFFFFF), 0);
     lv_label_set_text(label1, "Hello\nworld");
 
     /* Align the Label to the center
