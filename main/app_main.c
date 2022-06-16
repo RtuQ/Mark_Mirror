@@ -15,15 +15,14 @@
 #include "esp_system.h"
 #include "esp_timer.h"
 
+
 /* Littlevgl specific */
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
 #include "lvgl.h"
 #else
 #include "lvgl/lvgl.h"
 #endif
-
-#include "lvgl_helpers.h"
-
+#include "lv_port_disp.h"
 /*********************
  *      DEFINES
  *********************/
@@ -61,17 +60,17 @@ void app_main(void)
 
     ESP_ERROR_CHECK(i2c_master_init());
     vTaskDelay(500 / portTICK_PERIOD_MS);
-    ret = mpu_dmp_init();
-    printf("mpu_dmp:%d\r\n",ret);
+    // ret = mpu_dmp_init();
+    // printf("mpu_dmp:%d\r\n",ret);
 
 
     xTaskCreatePinnedToCore(guiTask, "gui", 4096*2, NULL, 0, NULL, 1);
 
 
     while(1) {
-        while (mpu_dmp_get_data(&pitch,&roll,&yaw)) {
-            printf("%f,%f,%f\r\n",pitch,roll,yaw);
-        }
+        // while (mpu_dmp_get_data(&pitch,&roll,&yaw)) {
+        //     printf("%f,%f,%f\r\n",pitch,roll,yaw);
+        // }
         vTaskDelay(200/portTICK_PERIOD_MS);
     }
     
@@ -86,31 +85,8 @@ static void guiTask(void *pvParameter)
 {
     (void) pvParameter;
     lv_init();
-    
-    /* Initialize the needed peripherals */
-    lvgl_interface_init();
-    /* Initialize needed GPIOs, e.g. backlight, reset GPIOs */
-    lvgl_display_gpios_init();
 
-    /* ToDo Initialize used display driver passing registered lv_disp_drv_t as parameter */
-
-    size_t display_buffer_size = lvgl_get_display_buffer_size();
-    lv_color_t* buf1 = heap_caps_malloc(display_buffer_size * sizeof(lv_color_t), MALLOC_CAP_DMA);
-    assert(buf1 != NULL);
-
-    static lv_disp_draw_buf_t disp_buf;
-    lv_disp_draw_buf_init(&disp_buf, buf1, NULL, display_buffer_size * 8);
-
-    lv_disp_drv_t disp_drv;
-    lv_disp_drv_init(&disp_drv);
-    disp_drv.flush_cb = disp_driver_flush;
-    disp_drv.rounder_cb = disp_driver_rounder;
-    disp_drv.set_px_cb = disp_driver_set_px;
-    disp_drv.draw_buf = &disp_buf;
-    /* LVGL v8: Set display horizontal and vertical resolution (in pixels), it's no longer done with lv_conf.h */
-    disp_drv.hor_res = 240u;
-    disp_drv.ver_res = 240u;
-    lv_disp_drv_register(&disp_drv);
+    lv_port_disp_init();
 
     /* Create and start a periodic timer interrupt to call lv_tick_inc */
     const esp_timer_create_args_t periodic_timer_args = {
@@ -138,7 +114,6 @@ static void guiTask(void *pvParameter)
         vTaskDelay(pdMS_TO_TICKS(10));
         lv_task_handler();
     }
-    free(buf1);
 }
 
 static void lvgl_tick_inc(void *arg) {
