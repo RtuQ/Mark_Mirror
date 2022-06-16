@@ -170,22 +170,22 @@ typedef struct {
 
 //Place data into DRAM. Constant data gets placed into DROM by default, which is not accessible by DMA.
 DRAM_ATTR static const lcd_init_cmd_t st_init_cmds[]={
+    /* Sleep Out */
+    {0x11, {0}, 0x80},
     /* Memory Data Access Control, MX=MV=0, MY=ML=MH=0, RGB=0 */
     {0x36, {0}, 1},
     /* Interface Pixel Format, 18bits/pixel for RGB/MCU interface */
-    {0x3A, {0x55}, 1},
+    {0x3A, {0x66}, 1},
     /* Porch Setting */
     {0xB2, {0x0c, 0x0c, 0x00, 0x33, 0x33}, 5},
     /* Gate Control, Vgh=13.65V, Vgl=-10.43V */
     {0xB7, {0x35}, 1},
     /* VCOM Setting, VCOM=1.175V */
-    {0xBB, {0x2B}, 1},
-    /* LCM Control, XOR: BGR, MX, MH */
-    {0xC0, {0x0C}, 1},
+    {0xBB, {0x32}, 1},
     /* VDV and VRH Command Enable, enable=1 */
-    {0xC2, {0x01, 0xff}, 2},
+    {0xC2, {0x01}, 1},
     /* VRH Set, Vap=4.4+... */
-    {0xC3, {0x10}, 1},
+    {0xC3, {0x19}, 1},
     /* VDV Set, VDV=0 */
     {0xC4, {0x20}, 1},
     /* Frame Rate Control, 60Hz, inversion=0 */
@@ -193,11 +193,9 @@ DRAM_ATTR static const lcd_init_cmd_t st_init_cmds[]={
     /* Power Control 1, AVDD=6.8V, AVCL=-4.8V, VDDS=2.3V */
     {0xD0, {0xA4, 0xA1}, 1},
     /* Positive Voltage Gamma Control */
-    {0xE0, {0xD0, 0x00, 0x05, 0x0E, 0x15, 0x0D, 0x37, 0x43, 0x47, 0x09, 0x15, 0x12, 0x16, 0x19}, 14},
+    {0xE0, {0xD0, 0x08, 0x0E, 0x09, 0x09, 0x05, 0x31, 0x33, 0x48, 0x17, 0x14, 0x15, 0x31, 0x34}, 14},
     /* Negative Voltage Gamma Control */
-    {0xE1, {0xD0, 0x00, 0x05, 0x0D, 0x0C, 0x06, 0x2D, 0x44, 0x40, 0x0E, 0x1C, 0x18, 0x16, 0x19}, 14},
-    /* Sleep Out */
-    {0x11, {0}, 0x80},
+    {0xE1, {0xD0, 0x08, 0x0E, 0x09, 0x09, 0x05, 0x31, 0x33, 0x48, 0x17, 0x14, 0x15, 0x31, 0x34}, 14},
     /* Display Inversion OFF */
  //   {0x20, {0}, 0x80},
     /* Display Inversion ON */
@@ -267,9 +265,8 @@ void lcd_init(spi_device_handle_t spi)
 
         cmd++;
     }
+    
 
-    // ///Enable backlight
-    // gpio_set_level(PIN_NUM_BCKL, 1);
 }
 
 //This function is called (in irq context!) just before a transmission starts. It will
@@ -280,11 +277,25 @@ void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
     gpio_set_level(PIN_NUM_DC, dc);
 }
 
+static void _lcd_SetWindows(uint16_t xStar, uint16_t yStar,uint16_t xEnd,uint16_t yEnd){
+	uint8_t setxcmd=0x2A;
+	uint8_t setycmd=0x2B;
+	uint8_t wramcmd=0x2C;
+    lcd_cmd(spi,setxcmd,0);
+    lcd_data(spi,(uint8_t[]){xStar>>8, 0x00FF&xStar, xEnd>>8, 0x00FF&xEnd}, 4);
+    
+    lcd_cmd(spi,setycmd,0);	
+	lcd_data(spi,(uint8_t[]){yStar>>8, 0x00FF&yStar, yEnd>>8, 0x00FF&yEnd}, 4);
+
+	lcd_cmd(spi,wramcmd,0);   //start writing GRAM			
+}
+
 /*Initialize your display and the required peripherals.*/
 static void disp_init(void)
 {
     /*You code here*/
     esp_err_t ret;
+    uint16_t color[2];
     spi_bus_config_t buscfg={
         .miso_io_num=-1,
         .mosi_io_num=PIN_NUM_MOSI,
@@ -365,7 +376,7 @@ void st7789_fill_react_data(uint16_t xsta,uint16_t ysta,uint16_t xend,uint16_t y
     trans[3].tx_data[3]=yend&0xff;  //end page low
     trans[4].tx_data[0]=0x2C;           //memory write
     trans[5].tx_buffer=color;        //finally send the line data
-    trans[5].length=strlen(color);          //Data length, in bits
+    trans[5].length=width*height*2;          //Data length, in bits
     trans[5].flags=0; //undo SPI_TRANS_USE_TXDATA flag
 
     //Queue all transactions.
@@ -376,18 +387,7 @@ void st7789_fill_react_data(uint16_t xsta,uint16_t ysta,uint16_t xend,uint16_t y
 }
 
 
-static void _lcd_SetWindows(uint16_t xStar, uint16_t yStar,uint16_t xEnd,uint16_t yEnd){
-	uint8_t setxcmd=0x2A;
-	uint8_t setycmd=0x2B;
-	uint8_t wramcmd=0x2C;
-    lcd_cmd(spi,setxcmd,0);
-    lcd_data(spi,(uint8_t[]){xStar>>8, 0x00FF&xStar, xEnd>>8, 0x00FF&xEnd}, 4);
-    
-    lcd_cmd(spi,setycmd,0);	
-	lcd_data(spi,(uint8_t[]){yStar>>8, 0x00FF&yStar, yEnd>>8, 0x00FF&yEnd}, 4);
 
-	lcd_cmd(spi,wramcmd,0);   //start writing GRAM			
-}
 
 void LCD_Disp_Flush(const lv_area_t * area, lv_color_t * color_p){
     int32_t cnt = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1) * 3;
@@ -459,12 +459,13 @@ static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_colo
     //         for(x = area->x1; x <= area->x2; x++) {
     //             /*Put a pixel to the display. For example:*/
     //             /*put_px(x, y, *color_p)*/
-    //             // st7789_fill_react_data(area->x1,area->y1,area->x2,area->y2,(uint16_t *)color_p);
+    //             st7789_fill_react_data(area->x1,area->y1,area->x2,area->y2,(uint16_t *)color_p);
                 
     //             color_p++;
     //         }
     //     }
     // }
+    // st7789_fill_react_data(area->x1,area->y1,area->x2,area->y2,color_p->full);
     LCD_Disp_Flush(area,color_p);
 
     /*IMPORTANT!!!
