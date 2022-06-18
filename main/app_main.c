@@ -14,14 +14,10 @@
 #include "mpu6050.h"
 #include "esp_system.h"
 #include "esp_timer.h"
+#include "st7789.h"
 
 
-/* Littlevgl specific */
-#ifdef LV_LVGL_H_INCLUDE_SIMPLE
 #include "lvgl.h"
-#else
-#include "lvgl/lvgl.h"
-#endif
 #include "lv_port_disp.h"
 /*********************
  *      DEFINES
@@ -144,8 +140,9 @@ void app_main(void)
     // printf("mpu_dmp:%d\r\n",ret);
 
 
-    xTaskCreatePinnedToCore(guiTask, "gui", 4096*2, NULL, 0, NULL, 1);
+    // xTaskCreatePinnedToCore(guiTask, "gui", 4096*2, NULL, 0, NULL, 1);
 
+    st7789_tft_init();
 
     while(1) {
         // while (mpu_dmp_get_data(&pitch,&roll,&yaw)) {
