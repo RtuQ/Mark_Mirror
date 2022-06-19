@@ -14,6 +14,7 @@
 #define RST_PIN_NUM 4
 #define BCKL_PIN_NUM 5
 
+
 typedef struct {
     uint8_t cmd;
     uint8_t data[16];
@@ -104,8 +105,8 @@ esp_err_t __esp_spi_init(void)
         .max_transfer_sz = 240 * 240 * 3 + 8
     };
     spi_device_interface_config_t dev_cfg = {
-        .clock_speed_hz = 10 * 1000 * 1000, // Clock out at 10 MHz
-        .mode = 0, // SPI mode 3
+        .clock_speed_hz = 20 * 1000 * 1000, // Clock out at 10 MHz
+        .mode = 3, // SPI mode 3    no why there is mode 3
         .spics_io_num = -1, // CS pin
         .queue_size = 7, // We want to be able to queue 7 transactions at a time
         .pre_cb = lcd_spi_pre_transfer_callback, // Specify pre-transfer callback to handle D/C line
@@ -117,6 +118,20 @@ esp_err_t __esp_spi_init(void)
     ret = spi_bus_add_device(HSPI_HOST, &dev_cfg, &spi);
     ESP_ERROR_CHECK(ret);
     return ret;
+}
+
+
+static void st7789_tft_set_windows(uint16_t xStar, uint16_t yStar,uint16_t xEnd,uint16_t yEnd){
+	uint8_t setxcmd=0x2A;
+	uint8_t setycmd=0x2B;
+	uint8_t wramcmd=0x2C;
+    lcd_cmd(setxcmd);
+    lcd_data((uint8_t[]){xStar>>8, 0x00FF&xStar, xEnd>>8, 0x00FF&xEnd}, 4);
+    
+    lcd_cmd(setycmd);	
+	lcd_data((uint8_t[]){yStar>>8, 0x00FF&yStar, yEnd>>8, 0x00FF&yEnd}, 4);
+
+	lcd_cmd(wramcmd);   //start writing GRAM			
 }
 
 
@@ -170,6 +185,26 @@ void st7789_fill_react_data(uint16_t xsta,uint16_t ysta,uint16_t xend,uint16_t y
 }
 
 
+void st7789_tft_draw_point(uint16_t x,uint16_t y,uint16_t color ) {
+    st7789_tft_set_windows(x,y,x,y);
+    lcd_data(&color,2);
+}
+
+
+void st7789_tft_disp_flush(const lv_area_t * area, lv_color_t * color_p)
+{
+    int32_t width = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1);
+    if(width < 0){
+        printf("parameter setting error!!!\n");
+        return;
+    }
+
+    st7789_tft_set_windows(area->x1, area->y1, area->x2, area->y2);
+
+    lcd_data(color_p,width*2);
+}
+
+
 /**
 * @brief st7789 tft 初始化
 *
@@ -179,7 +214,7 @@ void st7789_fill_react_data(uint16_t xsta,uint16_t ysta,uint16_t xend,uint16_t y
 esp_err_t st7789_tft_init(void)
 {
     int cmd = 0;
-    uint16_t buf[10*240];
+    // uint8_t buf[2];
     const lcd_init_cmd_t* lcd_init_cmds;
 
     __esp_spi_init();
@@ -211,11 +246,18 @@ esp_err_t st7789_tft_init(void)
         cmd++;
     }
 
-    for (uint16_t i = 0; i < 10*240;i++) {
-        buf[i] = 0xf800;
-    }
+    // buf[0] = 0x07;
+    // buf[1] = 0xe0;
 
-    st7789_fill_react_data(0,0,10,239,buf);
+    // st7789_tft_set_windows(0,0,240,240);
+
+    // for (uint16_t i = 0; i < 240 ;i++) {
+
+    //     for (uint16_t j = 0; j< 240 ;j++) {
+    //         lcd_data(buf,2);
+    //     }
+
+    // }
 
     return ESP_OK;
 }
