@@ -25,6 +25,8 @@
 #include "inv_mpu.h"
 #include "mpu6050.h"
 
+#include "sd_card.h"
+
 #include "lv_port_disp.h"
 #include "lvgl.h"
 
