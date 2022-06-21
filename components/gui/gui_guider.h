@@ -27,7 +27,7 @@ typedef struct
 	lv_obj_t *main_bar_2;
 	lv_obj_t *main_img_1;
 	lv_obj_t *main_img_2;
-	// lv_obj_t *main_img_3;
+	lv_obj_t *main_img_3;
 	lv_obj_t *screen;
 	lv_obj_t *screen_bar_1;
 	lv_obj_t *screen_label_1;

@@ -17,7 +17,7 @@ static const char *TAG = "sd card";
 #define PIN_NUM_CS    15
 
 
-void sd_card_init_card(void)
+void sd_card_init(void)
 {
     esp_err_t ret;
 
@@ -43,7 +43,22 @@ void sd_card_init_card(void)
     // production applications.
     ESP_LOGI(TAG, "Using SPI peripheral");
 
-    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    sdmmc_host_t host = {
+                .flags = SDMMC_HOST_FLAG_SPI | SDMMC_HOST_FLAG_DEINIT_ARG, \
+                .slot = VSPI_HOST, \
+                .max_freq_khz = SDMMC_FREQ_DEFAULT, \
+                .io_voltage = 3.3f, \
+                .init = &sdspi_host_init, \
+                .set_bus_width = NULL, \
+                .get_bus_width = NULL, \
+                .set_bus_ddr_mode = NULL, \
+                .set_card_clk = &sdspi_host_set_card_clk, \
+                .do_transaction = &sdspi_host_do_transaction, \
+                .deinit_p = &sdspi_host_remove_device, \
+                .io_int_enable = &sdspi_host_io_int_enable, \
+                .io_int_wait = &sdspi_host_io_int_wait, \
+                .command_timeout_ms = 0, \
+    };
     spi_bus_config_t bus_cfg = {
         .mosi_io_num = PIN_NUM_MOSI,
         .miso_io_num = PIN_NUM_MISO,
@@ -52,7 +67,7 @@ void sd_card_init_card(void)
         .quadhd_io_num = -1,
         .max_transfer_sz = 4000,
     };
-    ret = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
+    ret = spi_bus_initialize(host.slot, &bus_cfg, SPI_DMA_CH_AUTO);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize bus.");
         return;
@@ -83,7 +98,7 @@ void sd_card_init_card(void)
     sdmmc_card_print_info(stdout, card);
 
     // Use POSIX and C standard library functions to work with files.
-
+#if 0
     // First create a file.
     const char *file_hello = MOUNT_POINT"/hello.txt";
 
@@ -139,4 +154,5 @@ void sd_card_init_card(void)
 
     //deinitialize the bus after all devices are removed
     spi_bus_free(host.slot);
+#endif
 }

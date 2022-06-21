@@ -8,7 +8,7 @@
 * @param[in] 
 * @return 
 */
-void sd_card_init_card(void);
+void sd_card_init(void);
 
 
 #endif 

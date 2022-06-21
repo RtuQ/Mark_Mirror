@@ -319,9 +319,19 @@ void setup_scr_main(lv_ui *ui){
 	lv_img_set_pivot(ui->main_img_2, 0,0);
 	lv_img_set_angle(ui->main_img_2, 0);
 
-	// //Write codes main_img_3
-	// ui->main_img_3 = lv_img_create(ui->main);
-	// lv_obj_set_pos(ui->main_img_3, 11, 206);
-	// lv_obj_set_size(ui->main_img_3, 21, 22);
-	// lv_gif_set_src(img, &img_bulb_gif);
+	//Write codes main_img_3
+	ui->main_img_3 = lv_img_create(ui->main);
+	lv_obj_set_pos(ui->main_img_3, 171, 3);
+	lv_obj_set_size(ui->main_img_3, 64, 64);
+
+	static lv_style_t style_main_img_3_main_main_default;
+	lv_style_reset(&style_main_img_3_main_main_default);
+	lv_style_set_img_recolor(&style_main_img_3_main_main_default, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_img_recolor_opa(&style_main_img_3_main_main_default, 0);
+	lv_style_set_img_opa(&style_main_img_3_main_main_default, 255);
+	lv_obj_add_style(ui->main_img_3, &style_main_img_3_main_main_default, LV_PART_MAIN|LV_STATE_DEFAULT);
+	lv_obj_add_flag(ui->main_img_3, LV_OBJ_FLAG_CLICKABLE);
+	lv_img_set_src(ui->main_img_3,"S:/weather/103.bin");
+	lv_img_set_pivot(ui->main_img_3, 0,0);
+	lv_img_set_angle(ui->main_img_3, 0);
 }

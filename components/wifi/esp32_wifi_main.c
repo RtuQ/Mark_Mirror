@@ -24,7 +24,7 @@
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
 #define EXAMPLE_ESP_WIFI_SSID      "ssid"
-#define EXAMPLE_ESP_WIFI_PASS      "passward"
+#define EXAMPLE_ESP_WIFI_PASS      "pass"
 #define EXAMPLE_ESP_MAXIMUM_RETRY   5
 
 #if CONFIG_ESP_WIFI_AUTH_OPEN

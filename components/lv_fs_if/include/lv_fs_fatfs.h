@@ -1,13 +1,10 @@
 /**
- * @file lv_port_fs_templ.h
+ * @file lv_fs_if.h
  *
  */
 
-/*Copy this file as "lv_port_fs.h" and set this value to "1" to enable content*/
-#if 1
-
-#ifndef LV_PORT_FS_TEMPL_H
-#define LV_PORT_FS_TEMPL_H
+#ifndef LV_FS_IF_H
+#define LV_FS_IF_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,9 +13,13 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "lvgl/lvgl.h"
-#include "ff.h"
+#include <lvgl.h>
 
+/*File system interface*/
+#define LV_USE_FS_IF       1
+#define LV_FS_IF_FATFS    'S'
+
+#if LV_USE_FS_IF
 
 /*********************
  *      DEFINES
@@ -31,16 +32,21 @@ extern "C" {
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-void lv_port_fs_init(void);
+
+/**
+ * Register driver(s) for the File system interface
+ */
+void lv_fs_if_fatfs_init(void);
 
 /**********************
  *      MACROS
  **********************/
 
+#endif	/*LV_USE_FS_IF*/
+
 #ifdef __cplusplus
-} /*extern "C"*/
+} /* extern "C" */
 #endif
 
-#endif /*LV_PORT_FS_TEMPL_H*/
+#endif /*LV_FS_IF_H*/
 
-#endif /*Disable/Enable content*/

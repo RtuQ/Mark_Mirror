@@ -25,7 +25,7 @@
 #include "inv_mpu.h"
 #include "mpu6050.h"
 
-#include "sd_card.h"
+#include "lv_fs_fatfs.h"
 
 #include "lv_port_disp.h"
 #include "lvgl.h"
@@ -147,6 +147,8 @@ void app_main(void)
     lv_init();
 
     lv_port_disp_init();
+
+    lv_fs_if_fatfs_init();
 
     float pitch, roll, yaw;
 
