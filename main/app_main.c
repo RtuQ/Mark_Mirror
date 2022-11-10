@@ -169,7 +169,7 @@ void app_main(void)
 
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
 
-    xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 2, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 2, NULL, 5, NULL, 1);
 
     extern void wifi_init_sta(void);
     wifi_init_sta();
@@ -247,6 +247,7 @@ static void __disp_weather_task(void* pvParameters)
     char output_buffer[2048] = { 0 }; //用于接收通过http协议返回的数据
     int content_length = 0; // http协议头的长度
     char weather_buffer[100] = {0};
+    char icon_buffer[20] = {0};
 
     //定义http配置结构体，并且进行清零
     esp_http_client_config_t config;
@@ -307,7 +308,7 @@ static void __disp_weather_task(void* pvParameters)
                         cJSON* cjson_windDir = cJSON_GetObjectItem(cjson_item,"windDir");
                         cJSON* cjson_windScale = cJSON_GetObjectItem(cjson_item,"windScale");
                         cJSON* cjson_windSpeed = cJSON_GetObjectItem(cjson_item,"windSpeed");
-                        printf("%s\n", cjson_temperature->valuestring);
+                        cJSON* cjson_icon = cJSON_GetObjectItem(cjson_item,"icon");
                         lv_label_set_text(guider_ui.main_label_7,cjson_temperature->valuestring);
                         lv_bar_set_value(guider_ui.main_bar_1,atoi(cjson_temperature->valuestring),LV_ANIM_ON);
                         lv_label_set_text(guider_ui.main_label_8,cjson_hum->valuestring);
@@ -317,6 +318,11 @@ static void __disp_weather_task(void* pvParameters)
                         sprintf(weather_buffer,"weather:%s windDir:%s windScale:%s windSpeed:%s",cjson_weather->valuestring,\
                                 cjson_windDir->valuestring,cjson_windScale->valuestring,cjson_windSpeed->valuestring);
                         lv_label_set_text(guider_ui.main_label_6,weather_buffer);
+                        
+                        memset(icon_buffer,0,sizeof(icon_buffer));
+                        sprintf(icon_buffer,"S:/weather/%s.bin",cjson_icon->valuestring);
+                        ESP_LOGI(TAG,"%s",icon_buffer);
+                        lv_img_set_src(guider_ui.main_img_3,icon_buffer);
                     } else {
                         ESP_LOGE(TAG,"root is null");
                     }

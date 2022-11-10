@@ -102,13 +102,13 @@ esp_err_t __esp_spi_init(void)
         .sclk_io_num = CLK_PIN_NUM,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
-        .max_transfer_sz = 240 * 240 * 3 + 8
+        .max_transfer_sz = 240 * 240 * 2 * 8,
     };
     spi_device_interface_config_t dev_cfg = {
         .clock_speed_hz = 20 * 1000 * 1000, // Clock out at 10 MHz
         .mode = 3, // SPI mode 3    no why there is mode 3
         .spics_io_num = -1, // CS pin
-        .queue_size = 7, // We want to be able to queue 7 transactions at a time
+        .queue_size = 8, // We want to be able to queue 7 transactions at a time
         .pre_cb = lcd_spi_pre_transfer_callback, // Specify pre-transfer callback to handle D/C line
     };
     // Initialize the SPI bus
@@ -135,7 +135,7 @@ static void st7789_tft_set_windows(uint16_t xStar, uint16_t yStar,uint16_t xEnd,
 }
 
 
-void st7789_fill_react_data(uint16_t xsta,uint16_t ysta,uint16_t xend,uint16_t yend,uint16_t*buf)
+void st7789_fill_react_data(uint16_t xsta,uint16_t ysta,uint16_t xend,uint16_t yend,uint8_t*buf)
 {          
     esp_err_t ret;
     int x;
@@ -202,6 +202,8 @@ void st7789_tft_disp_flush(const lv_area_t * area, lv_color_t * color_p)
     st7789_tft_set_windows(area->x1, area->y1, area->x2, area->y2);
 
     lcd_data(color_p,width*2);
+
+    // st7789_fill_react_data(area->x1,area->y1,area->x2,area->y2,color_p);
 }
 
 
