@@ -5,17 +5,22 @@
 #include <sys/time.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_event.h"
 #include "lvgl_app.h"
 #include "lvgl.h"
 #include "lv_port_disp.h"
 #include "lv_fs_fatfs.h"
 #include "gui_guider.h"
+#include "esp_wifi.h"
+#include "esp_weather_time.h"
 
 #include "esp_log.h"
 #include "esp_timer.h"
 
 
 #define LV_TICK_PERIOD_MS 1
+
+static const char *TAG = "lvgl app";
 
 lv_ui guider_ui;
 lv_timer_t* disp_tim_task = NULL;
@@ -100,25 +105,56 @@ static void __esp_lvgl_gui_task(void* pvParameter)
 
     setup_scr_screen(&guider_ui);
     setup_scr_main(&guider_ui);
-    lv_scr_load(guider_ui.screen);
+    // lv_scr_load(guider_ui.screen);
 
-    lv_anim_t anim;
-    lv_anim_init(&anim); // 初始化动画
-    lv_anim_set_exec_cb(&anim, __bar_anim_exec_callback); // 添加回调函数
-    lv_anim_set_time(&anim, 20000); // 设置动画时长
-    lv_anim_set_var(&anim, guider_ui.screen_bar_1); // 动画绑定对象
-    lv_anim_set_values(&anim, 0, 100); // 设置开始值和结束值
-    lv_anim_set_repeat_count(&anim, 1); // 重复次数，默认值为1 LV_ANIM_REPEAT_INFINIT用于无限重复
-    lv_anim_start(&anim); // 应用动画效果
+    // lv_anim_t anim;
+    // lv_anim_init(&anim); // 初始化动画
+    // lv_anim_set_exec_cb(&anim, __bar_anim_exec_callback); // 添加回调函数
+    // lv_anim_set_time(&anim, 20000); // 设置动画时长
+    // lv_anim_set_var(&anim, guider_ui.screen_bar_1); // 动画绑定对象
+    // lv_anim_set_values(&anim, 0, 100); // 设置开始值和结束值
+    // lv_anim_set_repeat_count(&anim, 1); // 重复次数，默认值为1 LV_ANIM_REPEAT_INFINIT用于无限重复
+    // lv_anim_start(&anim); // 应用动画效果
 
     // // lv_scr_load_anim(guider_ui.main, LV_SCR_LOAD_ANIM_FADE_ON, 500, 5000, true);
     disp_tim_task = lv_timer_create(__disp_time_task_proc, 1000, NULL);
     // // disp_weather_task = lv_timer_create(__disp_weather_task_proc, 100000, NULL); //且用且珍惜
     lv_timer_enable(true);
 
+    // lv_obj_t * img;
+    // img = lv_gif_create(lv_scr_act());
+    // /* Assuming a File system is attached to letter 'A'
+    //  * E.g. set LV_USE_FS_STDIO 'A' in lv_conf.h */
+    // lv_gif_set_src(img, "S:login.bin");
+    // lv_obj_align(img, LV_ALIGN_RIGHT_MID, -20, 0);
+
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(10));
         lv_task_handler();
+    }
+}
+
+
+static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
+{
+    if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+        ESP_LOGI(TAG, "waitting to get internet time!!");
+        esp_internet_time_init();
+        lv_bar_set_value(guider_ui.screen_bar_1, 50, LV_ANIM_ON); // 设置进度条对象的值
+        lv_label_set_text(guider_ui.screen_label_1, "sync time");
+    } else if (event_base == NTP_TIME_EVENT) {
+        // wait for time to be set
+        time_t now = 0;
+        struct tm timeinfo = { 0 };
+        time(&now);
+        localtime_r(&now, &timeinfo);
+        ESP_LOGI(TAG,"Now time:%d:%d:%d",timeinfo.tm_hour+8,timeinfo.tm_min,timeinfo.tm_sec);     
+        //获取到时间之后再同步天气
+        esp_start_sync_weather(); 
+        
+        lv_bar_set_value(guider_ui.screen_bar_1, 100, LV_ANIM_ON); // 设置进度条对象的值  
+
+        lv_scr_load_anim(guider_ui.main, LV_SCR_LOAD_ANIM_FADE_ON, 500, 5000, true);
     }
 }
 
@@ -138,6 +174,10 @@ void esp_lvgl_device_app_init(void)
 
     //初始化SD卡
     lv_fs_if_fatfs_init();
+
+    
+    ESP_ERROR_CHECK( esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL) );
+    ESP_ERROR_CHECK( esp_event_handler_register(NTP_TIME_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL) );
 
     xTaskCreatePinnedToCore(__esp_lvgl_gui_task, "__esp_lvgl_gui_task", 4096 * 2, NULL, 5, NULL, 1);
 }

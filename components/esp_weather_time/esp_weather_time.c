@@ -130,13 +130,6 @@ void esp_internet_time_init(void)
     ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &check_time_timer));
 
     ESP_ERROR_CHECK(esp_timer_start_once(check_time_timer, 2000000));
-
-    // // wait for time to be set
-    // time_t now = 0;
-    // struct tm timeinfo = { 0 };
-    // time(&now);
-    // localtime_r(&now, &timeinfo);
-    // ESP_LOGI(TAG,"Now time:%d:%d:%d",timeinfo.tm_hour+8,timeinfo.tm_min,timeinfo.tm_sec);
 }
 
 
@@ -229,7 +222,7 @@ static void __disp_weather_task(void* pvParameters)
         }
         //关闭连接
         esp_http_client_close(client);
-        vTaskDelay(100000 / portTICK_PERIOD_MS);
+        vTaskDelay(300000 / portTICK_PERIOD_MS);
     }
 }
 
