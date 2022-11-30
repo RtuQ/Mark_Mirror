@@ -334,4 +334,54 @@ void setup_scr_main(lv_ui *ui){
 	lv_img_set_src(ui->main_img_3,"S:/weather/103.bin");
 	lv_img_set_pivot(ui->main_img_3, 0,0);
 	lv_img_set_angle(ui->main_img_3, 0);
+
+	//Write codes main_label_10
+	ui->main_label_10 = lv_label_create(ui->main);
+	lv_obj_set_pos(ui->main_label_10, 116, 8);
+	lv_obj_set_size(ui->main_label_10, 48, 20);
+	lv_label_set_text(ui->main_label_10, "1");
+	lv_label_set_long_mode(ui->main_label_10, LV_LABEL_LONG_WRAP);
+	lv_obj_set_style_text_align(ui->main_label_10, LV_TEXT_ALIGN_CENTER, 0);
+
+	//Write style state: LV_STATE_DEFAULT for style_main_label_10_main_main_default
+	static lv_style_t style_main_label_10_main_main_default;
+	lv_style_reset(&style_main_label_10_main_main_default);
+	lv_style_set_radius(&style_main_label_10_main_main_default, 0);
+	lv_style_set_bg_color(&style_main_label_10_main_main_default, lv_color_make(0x00, 0xff, 0x00));
+	lv_style_set_bg_grad_color(&style_main_label_10_main_main_default, lv_color_make(0x00, 0xff, 0x00));
+	lv_style_set_bg_grad_dir(&style_main_label_10_main_main_default, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_main_label_10_main_main_default, 255);
+	lv_style_set_text_color(&style_main_label_10_main_main_default, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_text_font(&style_main_label_10_main_main_default, &lv_font_MiSans_Normal_20);
+	lv_style_set_text_letter_space(&style_main_label_10_main_main_default, 2);
+	lv_style_set_pad_left(&style_main_label_10_main_main_default, 0);
+	lv_style_set_pad_right(&style_main_label_10_main_main_default, 0);
+	lv_style_set_pad_top(&style_main_label_10_main_main_default, 0);
+	lv_style_set_pad_bottom(&style_main_label_10_main_main_default, 0);
+	lv_obj_add_style(ui->main_label_10, &style_main_label_10_main_main_default, LV_PART_MAIN|LV_STATE_DEFAULT);
+
+	//Write codes main_label_11
+	ui->main_label_11 = lv_label_create(ui->main);
+	lv_obj_set_pos(ui->main_label_11, 18, 8);
+	lv_obj_set_size(ui->main_label_11, 48, 20);
+	lv_label_set_text(ui->main_label_11, "HZ");
+	lv_label_set_long_mode(ui->main_label_11, LV_LABEL_LONG_WRAP);
+	lv_obj_set_style_text_align(ui->main_label_11, LV_TEXT_ALIGN_CENTER, 0);
+
+	//Write style state: LV_STATE_DEFAULT for style_main_label_11_main_main_default
+	static lv_style_t style_main_label_11_main_main_default;
+	lv_style_reset(&style_main_label_11_main_main_default);
+	lv_style_set_radius(&style_main_label_11_main_main_default, 0);
+	lv_style_set_bg_color(&style_main_label_11_main_main_default, lv_color_make(0x3d, 0x62, 0xe6));
+	lv_style_set_bg_grad_color(&style_main_label_11_main_main_default, lv_color_make(0x3d, 0x62, 0xe6));
+	lv_style_set_bg_grad_dir(&style_main_label_11_main_main_default, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_main_label_11_main_main_default, 255);
+	lv_style_set_text_color(&style_main_label_11_main_main_default, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_text_font(&style_main_label_11_main_main_default, &lv_font_MiSans_Normal_20);
+	lv_style_set_text_letter_space(&style_main_label_11_main_main_default, 2);
+	lv_style_set_pad_left(&style_main_label_11_main_main_default, 0);
+	lv_style_set_pad_right(&style_main_label_11_main_main_default, 0);
+	lv_style_set_pad_top(&style_main_label_11_main_main_default, 0);
+	lv_style_set_pad_bottom(&style_main_label_11_main_main_default, 0);
+	lv_obj_add_style(ui->main_label_11, &style_main_label_11_main_main_default, LV_PART_MAIN|LV_STATE_DEFAULT);
 }

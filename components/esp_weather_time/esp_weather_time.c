@@ -209,12 +209,11 @@ static void __disp_weather_task(void* pvParameters)
                         sprintf(icon_buffer,"S:/weather/%s.bin",cjson_icon->valuestring);
                         ESP_LOGI(TAG,"%s",icon_buffer);
                         lv_img_set_src(guider_ui.main_img_3,icon_buffer);
+
+                        cJSON_Delete(root);
                     } else {
                         ESP_LOGE(TAG,"root is null");
                     }
-
-
-
                 } else {
                     ESP_LOGE(TAG, "Failed to read response");
                 }
@@ -222,7 +221,7 @@ static void __disp_weather_task(void* pvParameters)
         }
         //关闭连接
         esp_http_client_close(client);
-        vTaskDelay(300000 / portTICK_PERIOD_MS);
+        vTaskDelay(100000 / portTICK_PERIOD_MS);
     }
 }
 

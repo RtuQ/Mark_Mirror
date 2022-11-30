@@ -216,7 +216,7 @@ void st7789_tft_disp_flush(const lv_area_t * area, lv_color_t * color_p)
 esp_err_t st7789_tft_init(void)
 {
     int cmd = 0;
-    uint8_t buf[2];
+    // uint8_t buf[2];
     const lcd_init_cmd_t* lcd_init_cmds;
 
     __esp_spi_init();
@@ -248,18 +248,18 @@ esp_err_t st7789_tft_init(void)
         cmd++;
     }
 
-    buf[0] = 0x07;
-    buf[1] = 0xe0;
+    // buf[0] = 0x07;
+    // buf[1] = 0xe0;
 
-    st7789_tft_set_windows(0,0,240,240);
+    // st7789_tft_set_windows(0,0,240,240);
 
-    for (uint16_t i = 0; i < 240 ;i++) {
+    // for (uint16_t i = 0; i < 240 ;i++) {
 
-        for (uint16_t j = 0; j< 240 ;j++) {
-            lcd_data(buf,2);
-        }
+    //     for (uint16_t j = 0; j< 240 ;j++) {
+    //         lcd_data(buf,2);
+    //     }
 
-    }
+    // }
 
     return ESP_OK;
 }

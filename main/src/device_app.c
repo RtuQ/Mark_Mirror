@@ -14,10 +14,11 @@ static const char *TAG = "app main";
 void app_main(void)
 {
     ESP_ERROR_CHECK( nvs_flash_init() );
-
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    
+    esp_lvgl_device_app_init();
     // wifi初始化
     esp_smartconfig_wifi_init(); 
     
-    esp_lvgl_device_app_init();
 }
 

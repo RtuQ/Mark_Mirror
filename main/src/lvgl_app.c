@@ -13,6 +13,7 @@
 #include "gui_guider.h"
 #include "esp_wifi.h"
 #include "esp_weather_time.h"
+#include "lv_lib_gif/lv_gif.h"
 
 #include "esp_log.h"
 #include "esp_timer.h"
@@ -107,6 +108,10 @@ static void __esp_lvgl_gui_task(void* pvParameter)
     setup_scr_main(&guider_ui);
     // lv_scr_load(guider_ui.screen);
 
+    lv_obj_t * img = lv_gif_create_from_file(guider_ui.main, "S/gif/1.gif");
+    lv_obj_align(img, LV_ALIGN_TOP_LEFT, 168, 170);
+    lv_scr_load(guider_ui.screen);
+
     // lv_anim_t anim;
     // lv_anim_init(&anim); // 初始化动画
     // lv_anim_set_exec_cb(&anim, __bar_anim_exec_callback); // 添加回调函数
@@ -174,7 +179,6 @@ void esp_lvgl_device_app_init(void)
 
     //初始化SD卡
     lv_fs_if_fatfs_init();
-
     
     ESP_ERROR_CHECK( esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL) );
     ESP_ERROR_CHECK( esp_event_handler_register(NTP_TIME_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL) );

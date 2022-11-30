@@ -23,6 +23,8 @@ typedef struct
 	lv_obj_t *main_label_6;
 	lv_obj_t *main_label_7;
 	lv_obj_t *main_label_8;
+	lv_obj_t *main_label_10;
+	lv_obj_t *main_label_11;
 	lv_obj_t *main_bar_1;
 	lv_obj_t *main_bar_2;
 	lv_obj_t *main_img_1;
