@@ -44,21 +44,23 @@ void sd_card_init(void)
     ESP_LOGI(TAG, "Using SPI peripheral");
 
     sdmmc_host_t host = {
-                .flags = SDMMC_HOST_FLAG_SPI | SDMMC_HOST_FLAG_DEINIT_ARG, \
-                .slot = VSPI_HOST, \
-                .max_freq_khz = SDMMC_FREQ_DEFAULT, \
-                .io_voltage = 3.3f, \
-                .init = &sdspi_host_init, \
-                .set_bus_width = NULL, \
-                .get_bus_width = NULL, \
-                .set_bus_ddr_mode = NULL, \
-                .set_card_clk = &sdspi_host_set_card_clk, \
-                .do_transaction = &sdspi_host_do_transaction, \
-                .deinit_p = &sdspi_host_remove_device, \
-                .io_int_enable = &sdspi_host_io_int_enable, \
-                .io_int_wait = &sdspi_host_io_int_wait, \
-                .command_timeout_ms = 0, \
+        .flags = SDMMC_HOST_FLAG_SPI | SDMMC_HOST_FLAG_DEINIT_ARG, \
+        .slot = VSPI_HOST, \
+        .max_freq_khz = SDMMC_FREQ_DEFAULT, \
+        .io_voltage = 3.3f, \
+        .init = &sdspi_host_init, \
+        .set_bus_width = NULL, \
+        .get_bus_width = NULL, \
+        .set_bus_ddr_mode = NULL, \
+        .set_card_clk = &sdspi_host_set_card_clk, \
+        .do_transaction = &sdspi_host_do_transaction, \
+        .deinit_p = &sdspi_host_remove_device, \
+        .io_int_enable = &sdspi_host_io_int_enable, \
+        .io_int_wait = &sdspi_host_io_int_wait, \
+        .command_timeout_ms = 0, \
+        .get_real_freq = &sdspi_host_get_real_freq \
     };
+
     spi_bus_config_t bus_cfg = {
         .mosi_io_num = PIN_NUM_MOSI,
         .miso_io_num = PIN_NUM_MISO,
@@ -67,10 +69,10 @@ void sd_card_init(void)
         .quadhd_io_num = -1,
         .max_transfer_sz = 4000,
     };
-    ret = spi_bus_initialize(host.slot, &bus_cfg, SPI_DMA_CH_AUTO);
+    ret = spi_bus_initialize(host.slot, &bus_cfg, VSPI_HOST);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize bus.");
-        return;
+        // return;
     }
 
     // This initializes the slot without card detect (CD) and write protect (WP) signals.

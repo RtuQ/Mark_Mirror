@@ -6,7 +6,7 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "lv_fs_fatfs.h"
+#include "include/lv_fs_fatfs.h"
 
 #if LV_USE_FS_IF
 #if LV_FS_IF_FATFS != '\0'
