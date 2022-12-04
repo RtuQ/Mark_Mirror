@@ -33,12 +33,17 @@ typedef struct
 	lv_obj_t *screen;
 	lv_obj_t *screen_bar_1;
 	lv_obj_t *screen_label_1;
+	lv_obj_t *table1;
+	lv_obj_t *table1_list_1;
+	lv_obj_t *table1_list_1_item0;
+	lv_obj_t *table1_list_1_item1;
 }lv_ui;
 
 void setup_ui(lv_ui *ui);
 extern lv_ui guider_ui;
 void setup_scr_main(lv_ui *ui);
 void setup_scr_screen(lv_ui *ui);
+void setup_scr_table1(lv_ui *ui);
 LV_IMG_DECLARE(_temp_30x25);
 LV_IMG_DECLARE(_hum_21x22);
 

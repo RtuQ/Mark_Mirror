@@ -106,10 +106,16 @@ static void __esp_lvgl_gui_task(void* pvParameter)
 
     setup_scr_screen(&guider_ui);
     setup_scr_main(&guider_ui);
+    setup_scr_table1(&guider_ui);
     // lv_scr_load(guider_ui.screen);
 
     lv_obj_t * img = lv_gif_create_from_file(guider_ui.main, "S/gif/1.gif");
     lv_obj_align(img, LV_ALIGN_TOP_LEFT, 168, 170);
+
+    // lv_scr_load_anim(guider_ui.table1, LV_SCR_LOAD_ANIM_MOVE_LEFT, 500, 5000, true);
+
+    // vTaskDelay(pdMS_TO_TICKS(10000));
+
     lv_scr_load(guider_ui.screen);
 
     // lv_anim_t anim;

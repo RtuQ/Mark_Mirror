@@ -6,7 +6,9 @@
 #include "esp_wifi.h"
 #include "esp_log.h"
 #include "esp_event.h"
+#include "esp_timer.h"
 #include "esp_app_smartconfig.h"
+#include "mpu6050.h"
 
 
 static const char *TAG = "app main";
@@ -19,6 +21,8 @@ void app_main(void)
     esp_lvgl_device_app_init();
     // wifi初始化
     esp_smartconfig_wifi_init(); 
+
+    mpu6050_init();
     
 }
 
